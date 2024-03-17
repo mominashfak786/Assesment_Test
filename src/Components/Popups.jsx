@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const Popups = ({ isOpen, onClose }) => {
-  const [segmentName, setSegmentName] = useState("");
+const SegmentPopup = ({ isOpen, onClose }) => {
+  const [segmentNameInput, setSegmentNameInput] = useState("");
   const [selectedSchema, setSelectedSchema] = useState("");
   const [availableSchema, setAvailableSchema] = useState([
     "First Name",
@@ -15,7 +15,7 @@ const Popups = ({ isOpen, onClose }) => {
   ]);
   const [textFieldValues, setTextFieldValues] = useState({});
 
-  const handleAddSchema = () => {
+  const addSchema = () => {
     if (selectedSchema && !textFieldValues[selectedSchema]) {
       setTextFieldValues({
         ...textFieldValues,
@@ -27,8 +27,8 @@ const Popups = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleCancelSegment = () => {
-    setSegmentName("");
+  const cancelSegment = () => {
+    setSegmentNameInput("");
     setSelectedSchema("");
     setAvailableSchema([
       "First Name",
@@ -42,8 +42,8 @@ const Popups = ({ isOpen, onClose }) => {
     setTextFieldValues({});
   };
 
-  const handleSegmentName = (e) => {
-    setSegmentName(e.target.value);
+  const handleSegmentNameChange = (e) => {
+    setSegmentNameInput(e.target.value);
   };
 
   const handleTextFieldChange = (schema, value) => {
@@ -55,13 +55,13 @@ const Popups = ({ isOpen, onClose }) => {
 
   const sendDataToServer = () => {
     const dataToSend = {
-      segment_name: segmentName,
+      segment_name: segmentNameInput,
       schema: Object.keys(textFieldValues).map((schema) => ({
         [schema]: textFieldValues[schema],
       })),
     };
     console.log(dataToSend);
-
+  
     axios
       .post(
         "https://webhook.site/2c63f783-94d9-4cb2-8ab0-376b09aba871",
@@ -74,6 +74,7 @@ const Popups = ({ isOpen, onClose }) => {
         console.error("Error sending data to server:", error);
       });
   };
+  
 
   return (
     <div
@@ -89,6 +90,7 @@ const Popups = ({ isOpen, onClose }) => {
           width: "80vw",
           maxWidth: "380px",
           maxHeight: "100vh",
+          position: "relative",
           overflowY: "auto",
         }}
       >
@@ -105,7 +107,12 @@ const Popups = ({ isOpen, onClose }) => {
           </div>
         </nav>
 
-        <div className="p-3">
+        <div
+          className="p-3"
+          style={{
+            position: "relative",
+          }}
+        >
           <p
             style={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
@@ -122,8 +129,8 @@ const Popups = ({ isOpen, onClose }) => {
             type="text"
             className="form-control mb-3 shadow-none"
             placeholder="Name of the Segment"
-            value={segmentName}
-            onChange={handleSegmentName}
+            value={segmentNameInput}
+            onChange={handleSegmentNameChange}
           />
           <p
             style={{
@@ -160,17 +167,21 @@ const Popups = ({ isOpen, onClose }) => {
             ))}
           </select>
 
+
           <button
             style={{ color: "rgb(0, 188, 212)" }}
             className="btn btn-link mb-3"
-            onClick={handleAddSchema}
+            onClick={addSchema}
           >
             + Add new schema
           </button>
         </div>
-        <div style={{ marginTop: "100px" }} >
-          <div className="p-3 w-100 " style={{ backgroundColor: "#e9ecef" }}>
-            <div className="d-flex justify-space-between   ">
+        <div className="mt-auto">
+          <div
+            className="p-3 w-100"
+            style={{ backgroundColor: "#e9ecef", position: "absolute" }}
+          >
+            <div className="d-flex justify-space-between">
               <button
                 className="btn btn-info ml-3"
                 onClick={sendDataToServer}
@@ -180,7 +191,7 @@ const Popups = ({ isOpen, onClose }) => {
               </button>
               <button
                 className="btn btn-light text-danger border"
-                onClick={handleCancelSegment}
+                onClick={cancelSegment}
                 style={{ marginLeft: "10px" }}
               >
                 Cancel
@@ -193,4 +204,4 @@ const Popups = ({ isOpen, onClose }) => {
   );
 };
 
-export default Popups;
+export default SegmentPopup;
